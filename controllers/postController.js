@@ -22,6 +22,7 @@ class PostController {
         const data = await Post.destroy({
           where: { id },
         });
+        res.status(200).json({ message: "your post has been deleted" });
       } else {
         res.status(404).json({ message: "Post not found" });
       }
