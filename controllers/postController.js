@@ -1,4 +1,4 @@
-const { Post, Profile } = require("../models");
+const { Post, Profile, User } = require("../models");
 class PostController {
   static async addPost(req, res) {
     try {
@@ -37,12 +37,38 @@ class PostController {
   static async getById(req, res) {
     const id = req.params.id;
     try {
-      const found = await Post.findByPk(id);
+      const found = await Post.findByPk(id, {
+        include: [
+          {
+            model: Profile,
+            include: {
+              model: User,
+            },
+          },
+        ],
+      });
       if (found) {
         res.status(200).json(found);
       } else {
         res.status(404).json({ message: "Post not found" });
       }
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+  static async getAllPosts(req, res) {
+    try {
+      const data = await Post.findAll({
+        include: [
+          {
+            model: Profile,
+            include: {
+              model: User,
+            },
+          },
+        ],
+      });
+      res.status(200).json(data);
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });
     }
