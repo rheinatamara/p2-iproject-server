@@ -1,15 +1,19 @@
-const { Post, Profile } = require("../models");
+const { Post, Profile, User } = require("../models");
 class PostController {
   static async addPost(req, res) {
     try {
+      let posts = [];
       const { text, image_url } = req.body;
-      const result = await Post.create({
-        text,
-        image_url,
-        favourites_count: 0,
-        ProfileId: req.user.id,
-      });
-      res.status(200).json(result);
+      for (let image of image_url) {
+        posts.push({
+          text,
+          image_url: image,
+          favourites_count: 0,
+          ProfileId: req.user.id,
+        });
+      }
+      const add = await Post.bulkCreate(posts, { returning: true });
+      res.status(201).json(add);
     } catch (error) {
       console.log(error);
     }
@@ -26,6 +30,45 @@ class PostController {
       } else {
         res.status(404).json({ message: "Post not found" });
       }
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+  static async getById(req, res) {
+    const id = req.params.id;
+    try {
+      const found = await Post.findByPk(id, {
+        include: [
+          {
+            model: Profile,
+            include: {
+              model: User,
+            },
+          },
+        ],
+      });
+      if (found) {
+        res.status(200).json(found);
+      } else {
+        res.status(404).json({ message: "Post not found" });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+  static async getAllPosts(req, res) {
+    try {
+      const data = await Post.findAll({
+        include: [
+          {
+            model: Profile,
+            include: {
+              model: User,
+            },
+          },
+        ],
+      });
+      res.status(200).json(data);
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });
     }
