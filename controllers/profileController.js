@@ -40,7 +40,7 @@ class ProfileController {
               returning: true,
             }
           );
-          res.status(200).json(update);
+          res.status(200).json(update[1][0]);
         } else if (!profile_image_url && profile_background_image_url) {
           const update = await Profile.update(
             {
