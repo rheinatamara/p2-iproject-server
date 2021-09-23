@@ -7,6 +7,7 @@ class ProfileController {
         where: {
           UserId: req.user.id,
         },
+        include: [User, Post],
       });
       res.status(200).json(profile);
     } catch (error) {

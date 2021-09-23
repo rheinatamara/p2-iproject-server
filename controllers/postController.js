@@ -2,14 +2,18 @@ const { Post, Profile } = require("../models");
 class PostController {
   static async addPost(req, res) {
     try {
+      let posts = [];
       const { text, image_url } = req.body;
-      const result = await Post.create({
-        text,
-        image_url,
-        favourites_count: 0,
-        ProfileId: req.user.id,
-      });
-      res.status(200).json(result);
+      for (let image of image_url) {
+        posts.push({
+          text,
+          image_url: image,
+          favourites_count: 0,
+          ProfileId: req.user.id,
+        });
+      }
+      const add = await Post.bulkCreate(posts, { returning: true });
+      res.status(201).json(add);
     } catch (error) {
       console.log(error);
     }
