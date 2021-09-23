@@ -34,5 +34,18 @@ class PostController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
+  static async getById(req, res) {
+    const id = req.params.id;
+    try {
+      const found = await Post.findByPk(id);
+      if (found) {
+        res.status(200).json(found);
+      } else {
+        res.status(404).json({ message: "Post not found" });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
 }
 module.exports = PostController;
