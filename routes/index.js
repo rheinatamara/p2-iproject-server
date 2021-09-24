@@ -1,0 +1,10 @@
+const router = require("express").Router();
+const userRouter = require("./userRouter");
+const profileRouter = require("./profileRouter");
+const postRouter = require("./postRouter");
+const authentication = require("../middlewares/authentication");
+router.use("/", userRouter);
+router.use(authentication);
+router.use("/", profileRouter);
+router.use("/", postRouter);
+module.exports = router;
